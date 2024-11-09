@@ -4,6 +4,8 @@ import Footer from '../components/Footer';
 import ProgressDashboard from '../components/ProgressDashboard';
 import InternshipTracker from '../components/InternshipTracker';
 import CoffeeChatScheduler from '../components/CoffeeChatScheduler';
+import {Chart, ArcTracker, ArcElement} from 'chart.js';
+Chart.register(ArcElement);
 
 function DashboardPage() {
   return (

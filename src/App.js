@@ -6,26 +6,26 @@ import { AuthProvider } from './contexts/AuthContext';
 import PrivateRoute from './routes/PrivateRoute';
 import { ThemeProvider } from './contexts/ThemeContexts';
 
-
 function App() {
   return (
     <ThemeProvider>
       <AuthProvider>
-        <Router>
-          <Routes>
-            <Route path="/" element={
+      <Router>
+        <Routes>
+          <Route path="/login" element={<LoginPage />} />
+          <Route
+            path="/*"
+            element={
               <PrivateRoute>
-                <DashboardPage />
+                <DashboardPage/>
               </PrivateRoute>
-            } />
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/login" element={<LoginPage />} />
-          </Routes>
-        </Router>
-      </AuthProvider>
+            }
+          />
+        </Routes>
+      </Router>
+    </AuthProvider>
     </ThemeProvider>
   );
 }
-
 
 export default App;

@@ -6,10 +6,19 @@ function ProgressDashboard() {
   const [tasks, setTasks] = useState([]);
 
   useEffect(() => {
-    API.get('/tasks')
+    API.get('/api/tasks')
       .then((response) => setTasks(response.data))
       .catch((error) => console.error(error));
   }, []);
+
+  const handleComplete = (taskId) => {
+    API.patch(`/api/tasks/${taskId}/`, { status: 'Completed' })
+      .then(() => {
+        setTasks(tasks.map(task => task.id === taskId ? { ...task, status: 'Completed' } : task));
+      })
+      .catch(error => console.error(error));
+  };
+  
 
   return (
     <div className="bg-white p-6 rounded-lg shadow-md">
@@ -28,7 +37,7 @@ function ProgressDashboard() {
             {task.status !== 'Completed' && (
               <button
                 className="text-sm text-white bg-green-500 hover:bg-green-600 px-3 py-1 rounded-md"
-                onClick={() => {/* Handle task completion */}}
+                onClick={() => handleComplete(task.id)}
               >
                 Mark as Complete
               </button>

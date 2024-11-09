@@ -1,4 +1,4 @@
-import { createContext, useState } from 'react';
+import { createContext, useState, useEffect } from 'react';
 import axios from 'axios';
 
 export const AuthContext = createContext();
@@ -6,28 +6,32 @@ export const AuthContext = createContext();
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
 
-  const login = async (credentials) => {
-        try {
-        const response = await axios.post('/api/login', credentials);
-        setUser(response.data.user);
-        // Store token in localStorage or cookies
-        localStorage.setItem('token', response.data.token);
-        // Set default header for future requests
-        axios.defaults.headers.common['Authorization'] = `Bearer ${response.data.token}`;
-        } catch (error) {
-        console.error(error);
-        }
-    };
-    
-    const logout = () => {
-        setUser(null);
-        localStorage.removeItem('token');
-        delete axios.defaults.headers.common['Authorization'];
-    };
-  
+  // Load user and tokens from localStorage on app start
+  useEffect(() => {
+    const accessToken = localStorage.getItem('access_token');
+    if (accessToken) {
+      axios.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
+      // Optionally, fetch user data from an endpoint
+      axios.get('/api/user/')
+        .then(response => {
+          setUser(response.data);
+        })
+        .catch(error => {
+          console.error(error);
+          logout();
+        });
+    }
+  }, []);
+
+  const logout = () => {
+    setUser(null);
+    localStorage.removeItem('access_token');
+    localStorage.removeItem('refresh_token');
+    delete axios.defaults.headers.common['Authorization'];
+  };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout }}>
+    <AuthContext.Provider value={{ user, setUser, logout }}>
       {children}
     </AuthContext.Provider>
   );
